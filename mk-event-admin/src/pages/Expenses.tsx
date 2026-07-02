@@ -4,11 +4,11 @@ import { useApp } from '../store';
 import { Card, Button, Input, Select, Modal, Textarea } from '../components/ui';
 import { formatDate, formatCurrency } from '../utils';
 import {
-  Receipt, Plus, Edit, Trash2, Search, Filter,
+  Receipt, Plus, Edit, Trash2, Search,
   TrendingDown, Calendar, Clock, Tag, AlertCircle,
   Download, ChevronDown, ChevronUp, Wallet,
 } from 'lucide-react';
-import { format, subMonths } from 'date-fns';
+import { format } from 'date-fns';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid } from 'recharts';
 
 const CATEGORIES = [

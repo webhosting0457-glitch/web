@@ -2,13 +2,12 @@ import { useApp } from '../store';
 import { Card } from '../components/ui';
 import { formatDate, formatTime, formatCurrency, statusColor, payColor, waLink } from '../utils';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isToday, getDay, differenceInDays, parseISO } from 'date-fns';
-import { useState, useEffect } from 'react';
-import { photosApi } from '../api';
+import { useState } from 'react';
 import { Event } from '../types';
 import {
   Calendar, CheckCircle, Clock, CreditCard, Package, Sparkles,
   MapPin, Phone, MessageCircle, ArrowRight, AlertCircle,
-  ChevronLeft, ChevronRight, Camera, TrendingUp,
+  ChevronLeft, ChevronRight, Camera,
 } from 'lucide-react';
 
 // ── Event type cover images ────────────────────────────────────────────────

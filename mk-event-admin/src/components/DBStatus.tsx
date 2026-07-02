@@ -1,5 +1,5 @@
 import { useApp } from '../store';
-import { Database, Wifi, WifiOff, RefreshCw, X } from 'lucide-react';
+import { Database, WifiOff, RefreshCw, X } from 'lucide-react';
 import { useState } from 'react';
 
 export function DBStatus() {
@@ -44,19 +44,3 @@ export function DBConnectedBadge() {
   );
 }
 
-export function LoadingScreen() {
-  return (
-    <div className="fixed inset-0 bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center z-50">
-      <div className="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mb-4 animate-pulse">
-        <Database className="w-8 h-8 text-white" />
-      </div>
-      <p className="text-lg font-bold text-gray-900 dark:text-white">MK Brothers</p>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Connecting to MongoDB...</p>
-      <div className="mt-6 flex gap-1.5">
-        {[0,1,2].map(i => (
-          <div key={i} className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: `${i * 0.15}s` }} />
-        ))}
-      </div>
-    </div>
-  );
-}

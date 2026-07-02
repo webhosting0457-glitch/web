@@ -40,7 +40,7 @@ function PageContent() {
 }
 
 function Layout() {
-  const { sidebarOpen, toggleSidebar, loading, dbConnected } = useApp();
+  const { sidebarOpen, toggleSidebar } = useApp();
 
   // Never block on loading — show the app immediately with mock data
   // Backend connection happens in background
