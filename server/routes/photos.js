@@ -36,7 +36,8 @@ router.get('/:event_id', async (req, res) => {
     const mapped = photos.map(p => ({
       ...p.toObject(),
       id:  p._id,
-      url: `${req.protocol}://${req.get('host')}/uploads/${p.filename}`,
+      // Use Cloudinary URL if available (old photos), else local URL
+      url: p.cloudinary_url || `${req.protocol}://${req.get('host')}/uploads/${p.filename}`,
     }));
     res.json(mapped);
   } catch (err) {
