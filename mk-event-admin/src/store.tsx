@@ -69,14 +69,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [inventory, setInventory]           = useState<InventoryItem[]>(mockData.inventory);
   const [eventInventory, setEventInventory] = useState<EventInventory[]>(mockData.eventInventory);
   const [reminders, setReminders]           = useState<Reminder[]>(mockData.reminders);
-  const [darkMode, setDarkMode]             = useState(() => {
-    try {
-      const saved = localStorage.getItem('mk-dark-mode');
-      if (saved !== null) return saved === 'true';
-      // Default: respect OS preference
-      return window.matchMedia('(prefers-color-scheme: dark)').matches;
-    } catch { return false; }
-  });
+  const [darkMode, setDarkMode]             = useState(false);
   const [sidebarOpen, setSidebarOpen]       = useState(true);
   const [activePage, setActivePage]         = useState('dashboard');
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -84,10 +77,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [dbConnected, setDbConnected]       = useState(false);
   const [error, setError]                   = useState<string | null>(null);
 
-  // Apply dark class to <html> and persist preference
+  // Apply light class to <html> — always day mode
   useEffect(() => {
-    document.documentElement.classList.toggle('dark', darkMode);
-    try { localStorage.setItem('mk-dark-mode', String(darkMode)); } catch {}
+    document.documentElement.classList.remove('dark');
   }, [darkMode]);
 
   // Load all data from MongoDB on mount
