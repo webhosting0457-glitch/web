@@ -4,7 +4,7 @@ import { Card, Button, Input, Select, Modal, Textarea } from '../components/ui';
 import { formatDate, formatTime, formatCurrency, statusColor, payColor, waLink } from '../utils';
 import { Event, EventType, EventStatus, PaymentMethod, PaymentStatus, Client } from '../types';
 import { EventPhotos } from '../components/EventPhotos';
-import { photosApi } from '../api';
+import { photosApi, clientsApi } from '../api';
 import { getEventPhotos } from '../photoCache';
 import {
   Plus, Search, Eye, Edit, Trash2, MessageCircle, MapPin,
@@ -181,8 +181,7 @@ function EventForm({ event, onClose }: { event?: Event; onClose: () => void }) {
           google_map_link: cd.map || undefined,
         };
         try {
-          await clientsApi.update(clientId, {
-            name: cd.name, mobile: cd.mobile,
+          await clientsApi.update(clientId, {            name: cd.name, mobile: cd.mobile,
             alternate_mobile: cd.alt || undefined,
             address: fd.event_venue,
             google_map_link: cd.map || undefined,
