@@ -4,9 +4,29 @@ import { Client, Event, Payment, InventoryItem, EventInventory, Reminder } from 
 import { clientsApi, eventsApi, paymentsApi, inventoryApi, eventInventoryApi, remindersApi } from './api';
 import { toast } from './components/Toast';
 import { prefetchAllPhotos } from './photoCache';
-
-// ── Fallback mock data (used when backend is offline) ──────────────────────
 import * as mockData from './data';
+
+// ── LocalStorage helpers ───────────────────────────────────────────────────
+const LS = {
+  get: <T,>(key: string, fallback: T): T => {
+    try {
+      const v = localStorage.getItem(key);
+      return v ? JSON.parse(v) : fallback;
+    } catch { return fallback; }
+  },
+  set: (key: string, value: any) => {
+    try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+  },
+};
+
+const KEYS = {
+  clients:        'mk-clients',
+  events:         'mk-events',
+  payments:       'mk-payments',
+  inventory:      'mk-inventory',
+  eventInventory: 'mk-event-inventory',
+  reminders:      'mk-reminders',
+};
 
 interface AppState {
   clients: Client[];
@@ -43,7 +63,6 @@ interface AppActions {
 
 const Ctx = createContext<(AppState & AppActions) | null>(null);
 
-// Normalize MongoDB _id to id
 function normalize(obj: any): any {
   if (!obj) return obj;
   if (Array.isArray(obj)) return obj.map(normalize);
@@ -53,36 +72,77 @@ function normalize(obj: any): any {
     n.client = normalize(n.client_id);
     if (!n.client.id) n.client.id = String(n.client._id || n.client_id);
   }
-  if (n.event_id && typeof n.event_id === 'object') {
-    n.event = normalize(n.event_id);
-  }
-  if (n.inventory_id && typeof n.inventory_id === 'object') {
-    n.inventory_item = normalize(n.inventory_id);
-  }
+  if (n.event_id && typeof n.event_id === 'object') n.event = normalize(n.event_id);
+  if (n.inventory_id && typeof n.inventory_id === 'object') n.inventory_item = normalize(n.inventory_id);
   return n;
 }
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [clients, setClients]               = useState<Client[]>(mockData.clients);
-  const [events, setEvents]                 = useState<Event[]>(mockData.events);
-  const [payments, setPayments]             = useState<Payment[]>(mockData.payments);
-  const [inventory, setInventory]           = useState<InventoryItem[]>(mockData.inventory);
-  const [eventInventory, setEventInventory] = useState<EventInventory[]>(mockData.eventInventory);
-  const [reminders, setReminders]           = useState<Reminder[]>(mockData.reminders);
-  const [darkMode, setDarkMode]             = useState(false);
-  const [sidebarOpen, setSidebarOpen]       = useState(true);
-  const [activePage, setActivePage]         = useState('dashboard');
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
-  const [loading, setLoading]               = useState(false);
-  const [dbConnected, setDbConnected]       = useState(false);
-  const [error, setError]                   = useState<string | null>(null);
+  // Load from localStorage first (works offline), fall back to mock data
+  const [clients, setClientsRaw]               = useState<Client[]>(() => LS.get(KEYS.clients, mockData.clients));
+  const [events, setEventsRaw]                 = useState<Event[]>(() => LS.get(KEYS.events, mockData.events));
+  const [payments, setPaymentsRaw]             = useState<Payment[]>(() => LS.get(KEYS.payments, mockData.payments));
+  const [inventory, setInventoryRaw]           = useState<InventoryItem[]>(() => LS.get(KEYS.inventory, mockData.inventory));
+  const [eventInventory, setEventInventoryRaw] = useState<EventInventory[]>(() => LS.get(KEYS.eventInventory, mockData.eventInventory));
+  const [reminders, setRemindersRaw]           = useState<Reminder[]>(() => LS.get(KEYS.reminders, mockData.reminders));
+  const [darkMode, setDarkMode]                = useState(false);
+  const [sidebarOpen, setSidebarOpen]          = useState(true);
+  const [activePage, setActivePage]            = useState('dashboard');
+  const [selectedEventId, setSelectedEventId]  = useState<string | null>(null);
+  const [loading, setLoading]                  = useState(false);
+  const [dbConnected, setDbConnected]          = useState(false);
+  const [error, setError]                      = useState<string | null>(null);
 
-  // Apply light class to <html> — always day mode
+  // Setters that also persist to localStorage
+  const setClients = useCallback((v: Client[] | ((p: Client[]) => Client[])) => {
+    setClientsRaw(prev => {
+      const next = typeof v === 'function' ? v(prev) : v;
+      LS.set(KEYS.clients, next);
+      return next;
+    });
+  }, []);
+  const setEvents = useCallback((v: Event[] | ((p: Event[]) => Event[])) => {
+    setEventsRaw(prev => {
+      const next = typeof v === 'function' ? v(prev) : v;
+      LS.set(KEYS.events, next);
+      return next;
+    });
+  }, []);
+  const setPayments = useCallback((v: Payment[] | ((p: Payment[]) => Payment[])) => {
+    setPaymentsRaw(prev => {
+      const next = typeof v === 'function' ? v(prev) : v;
+      LS.set(KEYS.payments, next);
+      return next;
+    });
+  }, []);
+  const setInventory = useCallback((v: InventoryItem[] | ((p: InventoryItem[]) => InventoryItem[])) => {
+    setInventoryRaw(prev => {
+      const next = typeof v === 'function' ? v(prev) : v;
+      LS.set(KEYS.inventory, next);
+      return next;
+    });
+  }, []);
+  const setEventInventory = useCallback((v: EventInventory[] | ((p: EventInventory[]) => EventInventory[])) => {
+    setEventInventoryRaw(prev => {
+      const next = typeof v === 'function' ? v(prev) : v;
+      LS.set(KEYS.eventInventory, next);
+      return next;
+    });
+  }, []);
+  const setReminders = useCallback((v: Reminder[] | ((p: Reminder[]) => Reminder[])) => {
+    setRemindersRaw(prev => {
+      const next = typeof v === 'function' ? v(prev) : v;
+      LS.set(KEYS.reminders, next);
+      return next;
+    });
+  }, []);
+
+  // Always light mode
   useEffect(() => {
     document.documentElement.classList.remove('dark');
-  }, [darkMode]);
+  }, []);
 
-  // Load all data from MongoDB on mount
+  // Try to load from server — if online, update localStorage cache
   const refreshAll = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -102,14 +162,19 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setEventInventory(normalize(ei));
       setReminders(normalize(rem));
       setDbConnected(true);
-      // Prefetch all event photos in background after data loads
       const eventIds = normalize(e).map((ev: any) => ev._id || ev.id).filter(Boolean);
       prefetchAllPhotos(eventIds).catch(() => {});
     } catch (err: any) {
-      console.warn('Backend offline — using mock data:', err.message);
+      // Server offline — use cached localStorage data (already loaded on init)
+      const hasCached = LS.get(KEYS.events, []).length > 0;
       setDbConnected(false);
-      setError('Using offline mock data. Start the backend server to connect MongoDB.');
-      toast.warning('Running in offline mode — using mock data');
+      if (hasCached) {
+        setError('Offline — showing cached data from last sync.');
+        toast.warning('Offline mode — using last synced data');
+      } else {
+        setError('Offline — using demo data.');
+        toast.warning('Offline mode — using demo data');
+      }
     } finally {
       setLoading(false);
     }
@@ -127,7 +192,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } else {
       const ev = { ...data, id: Date.now().toString(), created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
       setEvents(p => [ev, ...p]);
-      toast.success('Event created successfully!');
+      toast.success('Event saved locally!');
       return ev;
     }
   }, [dbConnected]);
@@ -139,7 +204,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } else {
       setEvents(p => p.map(e => e.id === data.id ? { ...data, updated_at: new Date().toISOString() } : e));
     }
-    toast.success('Event updated successfully!');
+    toast.success('Event updated!');
   }, [dbConnected]);
 
   const deleteEvent = useCallback(async (id: string) => {
@@ -153,12 +218,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     if (dbConnected) {
       const created = normalize(await clientsApi.create(data));
       setClients(p => [created, ...p]);
-      toast.success('Client added successfully!');
+      toast.success('Client added!');
       return created;
     } else {
       const newClient = { ...data, id: Date.now().toString(), created_at: new Date().toISOString() };
       setClients(p => [newClient, ...p]);
-      toast.success('Client added successfully!');
+      toast.success('Client saved locally!');
       return newClient;
     }
   }, [dbConnected]);
@@ -173,7 +238,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } else {
       setPayments(p => [{ ...data, id: Date.now().toString(), created_at: new Date().toISOString() }, ...p]);
     }
-    toast.success('Payment recorded successfully!');
+    toast.success('Payment recorded!');
   }, [dbConnected]);
 
   // ── Inventory actions ──────────────────────────────────────────────────
@@ -194,7 +259,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } else {
       setInventory(p => p.map(i => i.id === data.id ? data : i));
     }
-    toast.success('Inventory item updated!');
+    toast.success('Inventory updated!');
   }, [dbConnected]);
 
   const deleteInventoryItem = useCallback(async (id: string) => {
@@ -211,7 +276,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     } else {
       setEventInventory(p => p.map(i => i.id === data.id ? data : i));
     }
-    toast.info(`Pickup status updated to: ${data.pickup_status}`);
+    toast.info(`Pickup status: ${data.pickup_status}`);
   }, [dbConnected]);
 
   const toggleDarkMode  = useCallback(() => setDarkMode(p => !p), []);
