@@ -181,7 +181,6 @@ function EventForm({ event, onClose }: { event?: Event; onClose: () => void }) {
           google_map_link: cd.map || undefined,
         };
         try {
-          const { clientsApi } = await import('../api');
           await clientsApi.update(clientId, {
             name: cd.name, mobile: cd.mobile,
             alternate_mobile: cd.alt || undefined,

@@ -8,4 +8,18 @@ export default defineConfig({
     tailwindcss(),
   ],
   base: process.env.GITHUB_PAGES ? '/mk-event-admin/' : '/',
+  build: {
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react':   ['react', 'react-dom', 'react-router-dom'],
+          'vendor-charts':  ['recharts'],
+          'vendor-ui':      ['lucide-react', 'clsx', 'tailwind-merge'],
+          'vendor-date':    ['date-fns'],
+          'vendor-xlsx':    ['xlsx'],
+        },
+      },
+    },
+  },
 })
