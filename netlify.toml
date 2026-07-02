@@ -1,12 +1,7 @@
 [build]
   base    = "mk-event-admin"
   command = "npm run build"
-  publish = "mk-event-admin/dist"
+  publish = "dist"
 
 [build.environment]
   NETLIFY_NEXT_PLUGIN_SKIP = "true"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-  [plugins.inputs]
-    skip = true
