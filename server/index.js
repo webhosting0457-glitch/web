@@ -2,6 +2,7 @@ require('dotenv').config();
 const express  = require('express');
 const mongoose = require('mongoose');
 const cors     = require('cors');
+const https    = require('https');
 
 const path     = require('path');
 
@@ -65,11 +66,28 @@ const PORT = process.env.PORT || 5002;
 // Start server immediately — don't block on DB connection
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
+
+  // Keep Render free tier alive — ping self every 10 minutes
+  if (process.env.RENDER_EXTERNAL_URL) {
+    const url = process.env.RENDER_EXTERNAL_URL + '/api/health';
+    setInterval(() => {
+      https.get(url, (res) => {
+        console.log(`♻️  Keep-alive ping: ${res.statusCode}`);
+      }).on('error', (err) => {
+        console.warn('Keep-alive ping failed:', err.message);
+      });
+    }, 10 * 60 * 1000); // every 10 minutes
+  }
 });
 
-// Connect to MongoDB
+// Connect to MongoDB with optimized settings for Atlas free tier
 if (process.env.MONGO_URI) {
-  mongoose.connect(process.env.MONGO_URI)
+  mongoose.connect(process.env.MONGO_URI, {
+    serverSelectionTimeoutMS: 5000,   // fail fast if Atlas unreachable
+    socketTimeoutMS: 45000,
+    maxPoolSize: 5,                   // limit connections on free tier
+    minPoolSize: 1,                   // keep 1 connection alive
+  })
     .then(() => {
       console.log('✅ MongoDB connected');
     })

@@ -862,7 +862,7 @@ export function Events() {
   const [view, setView] = useState<'list'|'detail'|'form'>('list');
   const [selected, setSelected] = useState<Event|undefined>();
   const [search, setSearch] = useState('');
-  const [statusF, setStatusF] = useState('Upcoming');
+  const [statusF, setStatusF] = useState('');
   const [payF, setPayF] = useState('');
   const [typeF, setTypeF] = useState('');
   const [delId, setDelId] = useState<string|null>(null);
