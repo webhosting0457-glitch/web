@@ -4,7 +4,7 @@ import { Card, Button, Input } from '../components/ui';
 import { Moon, Sun, Bell, Shield, Sparkles, Sheet, RefreshCw, ExternalLink } from 'lucide-react';
 import { toast } from '../components/Toast';
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+const BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5002/api';
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/1k1NT10pqvwn-rKN0rDUN7gzj-pQmtTB-N6b23DiOeAk/edit';
 
 const BIZ_KEY = 'mk-biz-info';

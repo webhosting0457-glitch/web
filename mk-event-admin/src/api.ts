@@ -1,6 +1,6 @@
 // Central API client — all calls go to the Express/MongoDB backend
 
-const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5002/api';
+const BASE = (import.meta as any).env?.VITE_API_URL || 'http://localhost:5002/api';
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 8000);
