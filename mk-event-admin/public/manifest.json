@@ -1,0 +1,18 @@
+{
+  "name": "MK Brothers Event Decoration",
+  "short_name": "MK Brothers",
+  "description": "Event Decoration Admin Panel",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#7c3aed",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
