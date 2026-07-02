@@ -104,10 +104,8 @@ function ExistingPhotos({ eventId }: { eventId: string }) {
 }
 
 function EventForm({ event, onClose }: { event?: Event; onClose: () => void }) {
-  const { clients, addEvent, updateEvent, addClient } = useApp();
-  const [clientMode, setClientMode] = useState<'new'|'existing'>(event ? 'existing' : 'new');
-  const [selClient, setSelClient] = useState(event?.client_id || '');
-  const [cd, setCd] = useState({ name: event?.client?.name||'', mobile: event?.client?.mobile||'', alt: event?.client?.alternate_mobile||'', address: event?.client?.address||'', map: event?.client?.google_map_link||'' });
+  const { addEvent, updateEvent, addClient } = useApp();
+  const [cd, setCd] = useState({ name: event?.client?.name||'', mobile: event?.client?.mobile||'', alt: event?.client?.alternate_mobile||'', map: event?.client?.google_map_link||'' });
   const [fd, setFd] = useState({
     event_name: event?.event_name || 'Baby Shower' as EventType,
     custom_event_name: event?.custom_event_name||'',
@@ -153,11 +151,8 @@ function EventForm({ event, onClose }: { event?: Event; onClose: () => void }) {
 
   const validate = () => {
     const e: Record<string,string> = {};
-    if (clientMode === 'new') {
-      if (!cd.name.trim()) e.name = 'Required';
-      if (!/^\d{10}$/.test(cd.mobile)) e.mobile = 'Enter valid 10-digit number';
-      if (!cd.address.trim()) e.address = 'Required';
-    } else if (!selClient) e.client = 'Select a client';
+    if (!cd.name.trim()) e.name = 'Required';
+    if (!/^\d{10}$/.test(cd.mobile)) e.mobile = 'Enter valid 10-digit number';
     if (!fd.event_venue.trim()) e.venue = 'Required';
     if (!fd.event_date) e.date = 'Required';
     if (!fd.event_time) e.time = 'Required';
@@ -171,44 +166,41 @@ function EventForm({ event, onClose }: { event?: Event; onClose: () => void }) {
     if (!validate()) return;
     setUploading(true);
     try {
-      let clientId = selClient;
+      let clientId = '';
       let clientObj: Client | undefined;
 
       if (event) {
-        // Edit mode — update client details directly
+        // Edit mode — update existing client
         clientId = event.client_id;
         clientObj = {
           ...event.client!,
           name: cd.name,
           mobile: cd.mobile,
           alternate_mobile: cd.alt || undefined,
-          address: cd.address,
+          address: fd.event_venue,
           google_map_link: cd.map || undefined,
         };
-        // Update client on server
         try {
           const { clientsApi } = await import('../api');
           await clientsApi.update(clientId, {
             name: cd.name, mobile: cd.mobile,
             alternate_mobile: cd.alt || undefined,
-            address: cd.address,
+            address: fd.event_venue,
             google_map_link: cd.map || undefined,
           });
         } catch (e) { console.warn('Client update failed:', e); }
-      } else if (clientMode === 'new') {
-        // Create client on server first to get real MongoDB _id
+      } else {
+        // Always create new client
         const newClientData = {
           name: cd.name, mobile: cd.mobile,
           alternate_mobile: cd.alt || undefined,
-          address: cd.address,
+          address: fd.event_venue,
           google_map_link: cd.map || undefined,
         };
         const created = await addClient(newClientData as any);
         const realClient = created as any;
         clientId = realClient?._id || realClient?.id || clientId;
         clientObj = realClient;
-      } else {
-        clientObj = clients.find(c => c.id === selClient);
       }
 
       const total = Number(fd.total_price), adv = Number(fd.advance_received) || 0;
@@ -259,41 +251,20 @@ function EventForm({ event, onClose }: { event?: Event; onClose: () => void }) {
           <User className="w-4 h-4 text-purple-600" />Client Details
         </h3>
 
-        {/* New event: toggle new/existing */}
-        {!event && (
-          <div className="flex gap-2 mb-4">
-            {(['new','existing'] as const).map(m => (
-              <button key={m} onClick={() => setClientMode(m)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors capitalize ${clientMode===m ? 'bg-purple-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`}>
-                {m === 'new' ? 'New Client' : 'Existing Client'}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Edit mode: always show editable client fields */}
+        {/* Client fields — always new client for create, editable for edit */}
         {event ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input label="Client Name *" placeholder="Full name" value={cd.name} onChange={e=>setCd(p=>({...p,name:e.target.value}))} error={errs.name} />
             <Input label="Mobile *" placeholder="10-digit" value={cd.mobile} onChange={e=>setCd(p=>({...p,mobile:e.target.value}))} error={errs.mobile} />
             <Input label="Alternate Mobile" placeholder="Optional" value={cd.alt} onChange={e=>setCd(p=>({...p,alt:e.target.value}))} />
             <Input label="Google Map Link" placeholder="https://maps.google.com/..." value={cd.map} onChange={e=>setCd(p=>({...p,map:e.target.value}))} />
-            <div className="md:col-span-2">
-              <Input label="Address" placeholder="Full address" value={cd.address} onChange={e=>setCd(p=>({...p,address:e.target.value}))} error={errs.address} />
-            </div>
           </div>
-        ) : clientMode === 'existing' ? (
-          <Select value={selClient} onChange={e => setSelClient(e.target.value)} error={errs.client}
-            options={[{value:'',label:'-- Select Client --'}, ...clients.map(c => ({value:c.id,label:`${c.name} (${c.mobile})`}))]} />
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input label="Client Name *" placeholder="Full name" value={cd.name} onChange={e=>setCd(p=>({...p,name:e.target.value}))} error={errs.name} />
             <Input label="Mobile *" placeholder="10-digit" value={cd.mobile} onChange={e=>setCd(p=>({...p,mobile:e.target.value}))} error={errs.mobile} />
             <Input label="Alternate Mobile" placeholder="Optional" value={cd.alt} onChange={e=>setCd(p=>({...p,alt:e.target.value}))} />
             <Input label="Google Map Link" placeholder="https://maps.google.com/..." value={cd.map} onChange={e=>setCd(p=>({...p,map:e.target.value}))} />
-            <div className="md:col-span-2">
-              <Input label="Address *" placeholder="Full address" value={cd.address} onChange={e=>setCd(p=>({...p,address:e.target.value}))} error={errs.address} />
-            </div>
           </div>
         )}
       </div>

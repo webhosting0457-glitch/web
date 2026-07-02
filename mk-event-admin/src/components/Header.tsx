@@ -5,8 +5,7 @@ import { clearAuthCookie } from '../pages/Login';
 
 const titles: Record<string, string> = {
   dashboard: 'Dashboard', events: 'Events', calendar: 'Calendar',
-  clients: 'Clients', payments: 'Payments', expenses: 'Expenses',
-  inventory: 'Inventory', pickup: 'Pickup', reminders: 'Reminders',
+  clients: 'Clients', reminders: 'Reminders',
   reports: 'Reports', search: 'Search', settings: 'Settings',
 };
 

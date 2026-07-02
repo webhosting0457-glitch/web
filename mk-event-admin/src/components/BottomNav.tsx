@@ -1,8 +1,8 @@
 import { useApp } from '../store';
 import { cn } from '../utils';
 import {
-  LayoutDashboard, Sparkles, Calendar, CreditCard,
-  Package, Bell, MoreHorizontal,
+  LayoutDashboard, Sparkles, Calendar,
+  Bell, MoreHorizontal,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -10,15 +10,11 @@ const mainNav = [
   { id: 'dashboard', icon: LayoutDashboard, label: 'Home' },
   { id: 'events',    icon: Sparkles,        label: 'Events' },
   { id: 'calendar',  icon: Calendar,        label: 'Calendar' },
-  { id: 'payments',  icon: CreditCard,      label: 'Payments' },
   { id: 'reminders', icon: Bell,            label: 'Alerts' },
 ];
 
 const moreNav = [
   { id: 'clients',   label: 'Clients' },
-  { id: 'inventory', label: 'Inventory' },
-  { id: 'expenses',  label: 'Expenses' },
-  { id: 'pickup',    label: 'Pickup' },
   { id: 'reports',   label: 'Reports' },
   { id: 'search',    label: 'Search' },
   { id: 'settings',  label: 'Settings' },

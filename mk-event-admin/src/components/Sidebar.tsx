@@ -1,8 +1,8 @@
 import { useApp } from '../store';
 import { cn } from '../utils';
 import {
-  LayoutDashboard, Calendar, Users, Package, Bell, CreditCard,
-  BarChart3, Settings, ChevronLeft, ChevronRight, Sparkles, Truck, Search, Receipt,
+  LayoutDashboard, Calendar, Users, Bell,
+  BarChart3, Settings, ChevronLeft, ChevronRight, Sparkles, Search,
 } from 'lucide-react';
 
 const nav = [
@@ -10,10 +10,6 @@ const nav = [
   { id: 'events',    icon: Sparkles,        label: 'Events' },
   { id: 'calendar',  icon: Calendar,        label: 'Calendar' },
   { id: 'clients',   icon: Users,           label: 'Clients' },
-  { id: 'payments',  icon: CreditCard,      label: 'Payments' },
-  { id: 'expenses',  icon: Receipt,         label: 'Expenses' },
-  { id: 'inventory', icon: Package,         label: 'Inventory' },
-  { id: 'pickup',    icon: Truck,           label: 'Material Pickup' },
   { id: 'reminders', icon: Bell,            label: 'Reminders' },
   { id: 'reports',   icon: BarChart3,       label: 'Reports' },
   { id: 'search',    icon: Search,          label: 'Search' },

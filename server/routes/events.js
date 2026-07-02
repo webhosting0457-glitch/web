@@ -6,6 +6,17 @@ const Event = require('../models/Event');
 router.get('/', async (req, res) => {
   try {
     const { status, payment_status, event_name, date_from, date_to, client_id } = req.query;
+
+    // Auto-complete: mark past Upcoming/In Progress events as Completed
+    const today = new Date().toISOString().split('T')[0];
+    await Event.updateMany(
+      {
+        event_date: { $lt: today },
+        event_status: { $in: ['Upcoming', 'In Progress'] },
+      },
+      { $set: { event_status: 'Completed' } }
+    );
+
     const filter = {};
     if (status)         filter.event_status   = status;
     if (payment_status) filter.payment_status = payment_status;

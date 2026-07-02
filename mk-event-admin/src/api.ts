@@ -8,7 +8,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     const res = await fetch(`${BASE}${path}`, {
       headers: {
         'Content-Type': 'application/json',
-        'ngrok-skip-browser-warning': 'true',  // bypass ngrok browser warning
       },
       signal: controller.signal,
       ...options,
