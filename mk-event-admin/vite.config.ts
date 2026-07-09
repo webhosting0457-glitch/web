@@ -31,6 +31,10 @@ export default defineConfig({
     }),
   ],
   base: process.env.GITHUB_PAGES ? '/mk-event-admin/' : '/',
+  server: {
+    host: '0.0.0.0',  // allow phone to connect
+    port: 5173,
+  },
   build: {
     chunkSizeWarningLimit: 1000,
   },
