@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: mk-event-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node index.js
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: MONGO_URI
+        sync: false
