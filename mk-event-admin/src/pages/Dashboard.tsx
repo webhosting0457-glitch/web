@@ -212,15 +212,15 @@ export function Dashboard() {
   const { events, reminders, payments, setActivePage, navigateToEvent } = useApp() as any;
   const today = format(new Date(), 'yyyy-MM-dd');
 
-  const todayEvts = events.filter(e => e.event_date === today);
+  const todayEvts = events.filter((e: any) => e.event_date === today);
   // Sort upcoming by nearest date first
   const upcoming = events
-    .filter(e => e.event_status !== 'Cancelled' && e.event_date >= today)
-    .sort((a, b) => a.event_date.localeCompare(b.event_date));
-  const completed = events.filter(e => e.event_status === 'Completed');
-  const totalRev = payments.reduce((s, p) => s + p.amount, 0);
-  const totalPending = events.reduce((s, e) => s + e.remaining_balance, 0);
-  const activeReminders = reminders.filter(r => !r.is_sent).slice(0, 4);
+    .filter((e: any) => e.event_status !== 'Cancelled' && e.event_date >= today)
+    .sort((a: any, b: any) => a.event_date.localeCompare(b.event_date));
+  const completed = events.filter((e: any) => e.event_status === 'Completed');
+  const totalRev = payments.reduce((s: number, p: any) => s + p.amount, 0);
+  const totalPending = events.reduce((s: number, e: any) => s + e.remaining_balance, 0);
+  const activeReminders = reminders.filter((r: any) => !r.is_sent).slice(0, 4);
 
   return (
     <div className="space-y-4">
@@ -261,7 +261,7 @@ export function Dashboard() {
                   View All <ArrowRight className="w-3 h-3" />
                 </button>
               </div>
-              {todayEvts.map(ev => (
+              {todayEvts.map((ev: any) => (
                 <Card key={ev.id} className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="min-w-0 flex-1">
@@ -324,7 +324,7 @@ export function Dashboard() {
             </Card>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3">
-              {upcoming.slice(0, 6).map(ev => (
+              {upcoming.slice(0, 6).map((ev: any) => (
                 <UpcomingCard key={ev.id} ev={ev} />
               ))}
             </div>
@@ -344,7 +344,7 @@ export function Dashboard() {
             {activeReminders.length === 0
               ? <p className="text-xs text-gray-500 dark:text-gray-400 text-center py-3">No pending reminders</p>
               : <div className="space-y-2.5">
-                  {activeReminders.map(r => (
+                  {activeReminders.map((r: any) => (
                     <div key={r.id} className="flex items-start gap-2.5">
                       <div className="w-7 h-7 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
                         <AlertCircle className="w-3.5 h-3.5 text-orange-600 dark:text-orange-400" />

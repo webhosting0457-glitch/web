@@ -6,16 +6,32 @@ const path     = require('path');
 
 const app = express();
 
-// CORS
+// CORS — allow local + mkbrothers.in + netlify
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  'http://localhost:4173',
+  'http://127.0.0.1:5173',
+  'https://mkbrothers.in',
+  'https://www.mkbrothers.in',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-    return callback(null, true); // allow all origins for local use
+    if (
+      allowedOrigins.includes(origin) ||
+      origin.endsWith('.netlify.app') ||
+      origin.endsWith('.onrender.com')
+    ) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
   },
   methods: ['GET','POST','PUT','DELETE','OPTIONS'],
   allowedHeaders: ['Content-Type','Authorization'],
   credentials: true,
 }));
+
 app.use(express.json());
 
 // Serve uploaded images statically
@@ -44,7 +60,6 @@ const PORT = process.env.PORT || 5002;
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
-  console.log(`📱 Network: http://192.168.29.182:${PORT}/api/health`);
 });
 
 // Connect to MongoDB
