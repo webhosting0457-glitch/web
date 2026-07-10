@@ -87,7 +87,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [reminders, setRemindersRaw]           = useState<Reminder[]>(() => LS.get(KEYS.reminders, mockData.reminders));
   const [darkMode, setDarkMode]                = useState(false);
   const [sidebarOpen, setSidebarOpen]          = useState(true);
-  const [activePage, setActivePage]            = useState('dashboard');
+  const [activePage, setActivePageRaw]        = useState(() => localStorage.getItem('mk-active-page') || 'dashboard');
   const [selectedEventId, setSelectedEventId]  = useState<string | null>(null);
   const [loading, setLoading]                  = useState(false);
   const [dbConnected, setDbConnected]          = useState(false);
@@ -279,6 +279,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     toast.info(`Pickup status: ${data.pickup_status}`);
   }, [dbConnected]);
 
+  const setActivePage = useCallback((page: string) => {
+    setActivePageRaw(page);
+    localStorage.setItem('mk-active-page', page);
+  }, []);
   const toggleDarkMode  = useCallback(() => setDarkMode(p => !p), []);
   const toggleSidebar   = useCallback(() => setSidebarOpen(p => !p), []);
   const navigateToEvent = useCallback((eventId: string) => {

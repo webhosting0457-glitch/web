@@ -860,7 +860,8 @@ export function Events() {
   const [view, setView] = useState<'list'|'detail'|'form'>('list');
   const [selected, setSelected] = useState<Event|undefined>();
   const [search, setSearch] = useState('');
-  const [statusF, setStatusF] = useState('Upcoming');
+  const [statusF, setStatusFRaw] = useState(() => localStorage.getItem('mk-event-filter') || 'Upcoming');
+  const setStatusF = (v: string) => { setStatusFRaw(v); localStorage.setItem('mk-event-filter', v); };
   const [payF, setPayF] = useState('');
   const [typeF, setTypeF] = useState('');
   const [delId, setDelId] = useState<string|null>(null);
