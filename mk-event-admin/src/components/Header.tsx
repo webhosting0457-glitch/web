@@ -38,10 +38,19 @@ export function Header() {
 
       {/* Right */}
       <div className="flex items-center gap-0.5 sm:gap-1 flex-shrink-0">
-        {/* DB Status */}
-        <div className="hidden sm:block mr-1">
+        {/* DB Status — show on all screen sizes */}
+        <div className="mr-1">
           <DBConnectedBadge />
         </div>
+        {/* Notifications */}
+        <button className="relative p-2 rounded-lg hover:bg-gray-100 transition-colors">
+          <Bell className="w-5 h-5 text-gray-600" />
+          {pending > 0 && (
+            <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+              {pending > 9 ? '9+' : pending}
+            </span>
+          )}
+        </button>
         {/* Avatar + Logout */}
         <div className="flex items-center gap-2 pl-2 ml-0.5 border-l border-gray-200">
           <div className="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center flex-shrink-0">

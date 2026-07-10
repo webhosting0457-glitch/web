@@ -1,5 +1,5 @@
 import { useApp } from '../store';
-import { Database, WifiOff, RefreshCw, X } from 'lucide-react';
+import { WifiOff, RefreshCw, X } from 'lucide-react';
 import { useState } from 'react';
 
 export function DBStatus() {
@@ -39,15 +39,23 @@ export function DBStatus() {
 }
 
 export function DBConnectedBadge() {
-  const { dbConnected } = useApp();
+  const { dbConnected, loading } = useApp();
+
+  if (loading) return (
+    <div className="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+      <span className="hidden sm:inline">Connecting...</span>
+    </div>
+  );
+
   return (
     <div className={`flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium ${
       dbConnected
-        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-        : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400'
+        ? 'bg-green-100 text-green-700'
+        : 'bg-orange-100 text-orange-700'
     }`}>
-      <Database className="w-3 h-3" />
-      {dbConnected ? 'MongoDB' : 'Offline'}
+      <div className={`w-2 h-2 rounded-full ${dbConnected ? 'bg-green-500' : 'bg-orange-500'}`} />
+      <span className="hidden sm:inline">{dbConnected ? 'MongoDB' : 'Offline'}</span>
     </div>
   );
 }

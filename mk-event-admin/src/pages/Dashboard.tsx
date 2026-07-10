@@ -46,6 +46,11 @@ function UpcomingCard({ ev }: { ev: Event }) {
           src={coverImg}
           alt={ev.event_name}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            const target = e.target as HTMLImageElement;
+            target.style.display = 'none';
+            target.parentElement!.classList.add('bg-gradient-to-br', 'from-purple-400', 'to-indigo-500');
+          }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
 
