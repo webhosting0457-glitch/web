@@ -879,7 +879,7 @@ export function Events() {
       && (!statusF || e.event_status === statusF)
       && (!payF || e.payment_status === payF)
       && (!typeF || e.event_name === typeF);
-  });
+  }).sort((a: Event, b: Event) => b.event_date.localeCompare(a.event_date));
 
   if (view === 'detail' && selected) return <EventDetail event={selected} onBack={() => setView('list')} onEdit={() => setView('form')} />;
 
@@ -900,7 +900,7 @@ export function Events() {
               placeholder="Search events, clients..." value={search} onChange={e => setSearch(e.target.value)} />
           </div>
           <div className="grid grid-cols-3 gap-2 sm:contents">
-            <Select value={statusF} onChange={e => setStatusF(e.target.value)} options={[{value:'',label:'Status'},{value:'Upcoming',label:'Upcoming'},{value:'In Progress',label:'In Progress'},{value:'Completed',label:'Completed'},{value:'Cancelled',label:'Cancelled'}]} />
+            <Select value={statusF} onChange={e => setStatusF(e.target.value)} options={[{value:'',label:'All Events'},{value:'Upcoming',label:'Upcoming'},{value:'In Progress',label:'In Progress'},{value:'Completed',label:'Completed'},{value:'Cancelled',label:'Cancelled'}]} />
             <Select value={payF} onChange={e => setPayF(e.target.value)} options={[{value:'',label:'Payment'},{value:'Paid',label:'Paid'},{value:'Partial Paid',label:'Partial'},{value:'Pending',label:'Pending'}]} />
             <Select value={typeF} onChange={e => setTypeF(e.target.value)} options={[{value:'',label:'Type'},...EVENT_TYPES.map(t=>({value:t,label:t.split(' ')[0]}))]} />
           </div>
