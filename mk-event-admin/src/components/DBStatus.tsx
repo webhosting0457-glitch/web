@@ -6,6 +6,14 @@ export function DBStatus() {
   const { dbConnected, error, loading, refreshAll } = useApp();
   const [dismissed, setDismissed] = useState(false);
 
+  // Show connecting spinner while loading
+  if (loading) return (
+    <div className="fixed top-14 sm:top-16 left-0 right-0 z-20 bg-blue-500 text-white px-4 py-2 flex items-center gap-3 text-xs sm:text-sm shadow-md">
+      <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin flex-shrink-0" />
+      <span className="flex-1">Connecting to server...</span>
+    </div>
+  );
+
   if (dismissed || dbConnected) return null;
   if (!error) return null;
 

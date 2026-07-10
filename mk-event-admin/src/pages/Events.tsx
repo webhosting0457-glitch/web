@@ -860,7 +860,7 @@ export function Events() {
   const [view, setView] = useState<'list'|'detail'|'form'>('list');
   const [selected, setSelected] = useState<Event|undefined>();
   const [search, setSearch] = useState('');
-  const [statusF, setStatusF] = useState('');
+  const [statusF, setStatusF] = useState('Upcoming');
   const [payF, setPayF] = useState('');
   const [typeF, setTypeF] = useState('');
   const [delId, setDelId] = useState<string|null>(null);
@@ -879,7 +879,11 @@ export function Events() {
       && (!statusF || e.event_status === statusF)
       && (!payF || e.payment_status === payF)
       && (!typeF || e.event_name === typeF);
-  }).sort((a: Event, b: Event) => b.event_date.localeCompare(a.event_date));
+  }).sort((a: Event, b: Event) => {
+    // Upcoming: nearest date first. Others: newest first
+    if (statusF === 'Upcoming') return a.event_date.localeCompare(b.event_date);
+    return b.event_date.localeCompare(a.event_date);
+  });
 
   if (view === 'detail' && selected) return <EventDetail event={selected} onBack={() => setView('list')} onEdit={() => setView('form')} />;
 

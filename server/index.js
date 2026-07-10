@@ -60,6 +60,14 @@ const PORT = process.env.PORT || 5002;
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on port ${PORT}`);
+
+  // Keep Render free tier alive — ping every 10 minutes
+  const serverUrl = process.env.RENDER_EXTERNAL_URL || `https://web-5w7c.onrender.com`;
+  setInterval(() => {
+    fetch(`${serverUrl}/api/health`)
+      .then(() => console.log('♻️  Keep-alive ping sent'))
+      .catch(() => {});
+  }, 10 * 60 * 1000);
 });
 
 // Connect to MongoDB
