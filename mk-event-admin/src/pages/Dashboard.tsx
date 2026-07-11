@@ -28,7 +28,8 @@ function UpcomingCard({ ev }: { ev: Event }) {
   const photo = (ev as any).cover_photo_url || null;
   const today = format(new Date(), 'yyyy-MM-dd');
   const daysLeft = differenceInDays(parseISO(ev.event_date), parseISO(today));
-  const coverImg = photo || EVENT_COVERS[ev.event_name] || EVENT_COVERS['Custom Event'];
+  // Always use Unsplash cover — reliable, no auth needed
+  const coverImg = EVENT_COVERS[ev.event_name] || EVENT_COVERS['Custom Event'];
 
   const daysColor = daysLeft === 0 ? 'bg-blue-600'
     : daysLeft <= 2 ? 'bg-red-500'
@@ -41,15 +42,19 @@ function UpcomingCard({ ev }: { ev: Event }) {
       onClick={() => navigateToEvent(ev.id || (ev as any)._id)}
     >
       {/* Photo */}
-      <div className="relative h-32 bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+      <div className="relative h-32 flex-shrink-0">
         <img
           src={coverImg}
           alt={ev.event_name}
           className="w-full h-full object-cover"
+          referrerPolicy="no-referrer"
+          crossOrigin="anonymous"
           onError={(e) => {
             const target = e.target as HTMLImageElement;
-            target.style.display = 'none';
-            target.parentElement!.classList.add('bg-gradient-to-br', 'from-purple-400', 'to-indigo-500');
+            // Try Unsplash fallback
+            if (!target.src.includes('unsplash')) {
+              target.src = EVENT_COVERS[ev.event_name] || EVENT_COVERS['Custom Event'];
+            }
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
